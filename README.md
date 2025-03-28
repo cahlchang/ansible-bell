@@ -13,8 +13,6 @@ This repository contains the Ansible Bell collection (`cahlchang.bell`), which p
 
 ### From Ansible Galaxy
 
-The collection is not yet published to Ansible Galaxy. Once published, you can install it with:
-
 ```bash
 ansible-galaxy collection install cahlchang.bell
 ```
