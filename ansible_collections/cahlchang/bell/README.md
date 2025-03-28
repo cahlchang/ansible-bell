@@ -6,6 +6,8 @@ This collection provides modules to play sounds when Ansible tasks complete, pro
 
 ### From Ansible Galaxy
 
+The collection is not yet published to Ansible Galaxy. Once published, you can install it with:
+
 ```bash
 ansible-galaxy collection install cahlchang.bell
 ```
