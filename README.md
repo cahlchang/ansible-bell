@@ -8,6 +8,7 @@ This repository contains the Ansible Bell collection (`cahlchang.bell`), which p
 - Callback plugin to play sounds at playbook completion
 - Cross-platform support (Linux, macOS, Windows)
 - Customizable sounds and volume
+- Built-in sample sounds that work out of the box
 
 ## Installation
 
@@ -50,12 +51,16 @@ ansible-galaxy collection install cahlchang-bell-*.tar.gz
 
 ### Using the bell callback plugin
 
-Add to your `ansible.cfg`:
+The bell callback plugin works out of the box with built-in sample sounds. Simply enable it in your `ansible.cfg`:
 
 ```ini
 [defaults]
-callback_whitelist = cahlchang.bell.bell
+callbacks_enabled = cahlchang.bell.bell
+```
 
+You can customize the sounds and volume by adding:
+
+```ini
 [callback_bell]
 success_sound = /path/to/success.wav
 failure_sound = /path/to/failure.wav

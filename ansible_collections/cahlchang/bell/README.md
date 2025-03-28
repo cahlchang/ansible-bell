@@ -1,6 +1,6 @@
 # Ansible Bell Collection
 
-This collection provides modules to play sounds when Ansible tasks complete, providing audible notifications for long-running playbooks.
+This collection provides modules to play sounds when Ansible tasks complete, providing audible notifications for long-running playbooks. It includes built-in sample sounds that work out of the box, with the ability to customize sounds through configuration.
 
 ## Installation
 
@@ -24,6 +24,26 @@ ansible-galaxy collection install cahlchang-bell-latest.tar.gz
 ### play_sound
 
 Play a sound when an Ansible task completes.
+
+## Callback Plugins
+
+### bell
+
+The bell callback plugin plays sounds when playbooks finish. It uses built-in sample sounds by default, but you can customize the sounds through your `ansible.cfg` file.
+
+#### Configuration
+
+Add to your `ansible.cfg`:
+
+```ini
+[defaults]
+callbacks_enabled = cahlchang.bell.bell
+
+[callback_bell]
+success_sound = /path/to/success.wav  # Optional, uses built-in sample sound if not specified
+failure_sound = /path/to/failure.wav  # Optional, uses built-in sample sound if not specified
+volume = 0.8  # Optional, defaults to 1.0
+```
 
 #### Parameters
 
