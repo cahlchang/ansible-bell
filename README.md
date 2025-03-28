@@ -11,15 +11,30 @@ This repository contains the Ansible Bell collection (`cahlchang.bell`), which p
 
 ## Installation
 
+### From Ansible Galaxy
+
 ```bash
 ansible-galaxy collection install cahlchang.bell
 ```
 
-Or, clone this repository and build the collection:
+### From GitHub Releases
 
 ```bash
+# Download the latest release
+curl -LO "https://github.com/cahlchang/ansible-bell/releases/latest/download/cahlchang-bell-latest.tar.gz"
+# Install the collection
+ansible-galaxy collection install cahlchang-bell-latest.tar.gz
+```
+
+### Build from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/cahlchang/ansible-bell.git
 cd ansible-bell
+# Build the collection
 ansible-galaxy collection build ansible_collections/cahlchang/bell
+# Install the collection
 ansible-galaxy collection install cahlchang-bell-*.tar.gz
 ```
 
