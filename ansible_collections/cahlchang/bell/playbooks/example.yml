@@ -1,0 +1,24 @@
+---
+# Example playbook demonstrating the use of the cahlchang.bell collection
+
+- name: Bell notification examples
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Run a long task
+      ansible.builtin.debug:
+        msg: "This is a simulated long-running task"
+      # In a real scenario, this would be a long-running task like a deployment
+
+    - name: Play default notification sound
+      cahlchang.bell.play_sound:
+      
+    - name: Run another task
+      ansible.builtin.pause:
+        seconds: 2
+        prompt: "This is another task with a pause"
+        
+    - name: Play custom notification with message
+      cahlchang.bell.play_sound:
+        message: "Custom task completed!"
+        volume: 0.8

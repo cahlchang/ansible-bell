@@ -1,0 +1,17 @@
+---
+# Test playbook for Ansible Bell collection
+- name: Test Ansible Bell
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Display a message
+      ansible.builtin.debug:
+        msg: "This is a test message before playing a sound"
+        
+    - name: Play a sound
+      cahlchang.bell.play_sound:
+        message: "Test sound played successfully"
+        
+    - name: Display another message
+      ansible.builtin.debug:
+        msg: "Sound should have played"
