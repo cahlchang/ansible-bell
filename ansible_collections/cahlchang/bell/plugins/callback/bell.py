@@ -15,6 +15,8 @@ DOCUMENTATION = '''
     description:
         - This callback plays a sound when playbooks finish.
         - The sound is played on the control node.
+        - By default, it uses sample sounds included with the collection.
+        - You can override the default sounds by specifying custom sound files in ansible.cfg.
     requirements:
         - A sound player (aplay, paplay, mplayer on Linux; afplay on macOS; PowerShell on Windows)
     options:
@@ -90,13 +92,13 @@ class CallbackModule(CallbackBase):
         # Create default sounds if not specified
         if not self.success_sound or not os.path.exists(self.success_sound):
             if HAS_SOUND_UTILS:
-                self.success_sound = create_default_sound()
+                self.success_sound = create_default_sound('success')
             else:
                 self.success_sound = self._create_default_sound()
                 
         if not self.failure_sound or not os.path.exists(self.failure_sound):
             if HAS_SOUND_UTILS:
-                self.failure_sound = create_default_sound()
+                self.failure_sound = create_default_sound('failure')
             else:
                 self.failure_sound = self._create_default_sound()
 
