@@ -1,0 +1,37 @@
+---
+# Integration tests for the play_sound module
+- name: Test play_sound module
+  hosts: localhost
+  gather_facts: true
+  tasks:
+    - name: Test default sound
+      cahlchang.bell.play_sound:
+      register: default_result
+      
+    - name: Verify default sound result
+      assert:
+        that:
+          - default_result is changed
+          - default_result.message == "Ansible task completed"
+          - default_result.sound_file is defined
+          
+    - name: Test with custom message
+      cahlchang.bell.play_sound:
+        message: "Custom test message"
+      register: custom_message_result
+      
+    - name: Verify custom message result
+      assert:
+        that:
+          - custom_message_result is changed
+          - custom_message_result.message == "Custom test message"
+          
+    - name: Test with custom volume
+      cahlchang.bell.play_sound:
+        volume: 0.5
+      register: volume_result
+      
+    - name: Verify volume result
+      assert:
+        that:
+          - volume_result is changed
