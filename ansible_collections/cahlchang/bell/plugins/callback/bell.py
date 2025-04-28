@@ -87,18 +87,24 @@ class CallbackModule(CallbackBase):
         self.failure_sound = self.get_option('failure_sound')
         self.volume = float(self.get_option('volume'))
         
+        self._display.debug(f"Callback bell options from ansible.cfg - success_sound: {self.success_sound}, failure_sound: {self.failure_sound}, volume: {self.volume}")
+        
         # Create default sounds if not specified
         if not self.success_sound or not os.path.exists(self.success_sound):
             if HAS_SOUND_UTILS:
-                self.success_sound = create_default_sound()
+                self.success_sound = create_default_sound('success')
+                self._display.debug(f"Using default success sound: {self.success_sound}")
             else:
                 self.success_sound = self._create_default_sound()
+                self._display.debug(f"Created default success sound: {self.success_sound}")
                 
         if not self.failure_sound or not os.path.exists(self.failure_sound):
             if HAS_SOUND_UTILS:
-                self.failure_sound = create_default_sound()
+                self.failure_sound = create_default_sound('failure')
+                self._display.debug(f"Using default failure sound: {self.failure_sound}")
             else:
                 self.failure_sound = self._create_default_sound()
+                self._display.debug(f"Created default failure sound: {self.failure_sound}")
 
     def _create_default_sound(self):
         """Create a default beep sound file."""

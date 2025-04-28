@@ -56,7 +56,7 @@ Add to your `ansible.cfg`:
 [defaults]
 callback_whitelist = cahlchang.bell.bell
 
-[callback_bell]
+[callback_bell] # optional
 success_sound = /path/to/success.wav
 failure_sound = /path/to/failure.wav
 volume = 0.8

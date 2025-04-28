@@ -258,15 +258,32 @@ def main():
     # Debug information
     print(f"Starting play_sound module with parameters: sound_file={sound_file}, message={message}, volume={volume}")
     
-    # If no sound file is provided, use the default
+    # If no sound file is provided, use the default from ansible.cfg or sample directory
     if not sound_file:
-        print("No sound file provided, creating default sound")
-        sound_file = create_default_sound()
+        print("No sound file provided, using default sound")
+        try:
+            from ansible_collections.cahlchang.bell.plugins.module_utils.sound_utils import (
+                create_default_sound,
+                get_default_sound_path,
+                get_volume_from_cfg,
+            )
+            sound_file = create_default_sound('success')
+            
+            # If volume not explicitly provided, check ansible.cfg
+            if 'volume' not in module.params or module.params['volume'] == 1.0:
+                cfg_volume = get_volume_from_cfg()
+                if cfg_volume is not None:
+                    volume = cfg_volume
+                    print(f"Using volume {volume} from ansible.cfg")
+        except ImportError:
+            # Fall back to internal method if import fails
+            sound_file = create_default_sound()
+        
         if not sound_file:
             error_msg = "Failed to create default sound file and no custom sound file provided"
             print(error_msg)
             module.fail_json(msg=error_msg)
-        print(f"Created default sound file: {sound_file}")
+        print(f"Using default sound file: {sound_file}")
 
     # Check if the sound file exists
     if not os.path.exists(sound_file):

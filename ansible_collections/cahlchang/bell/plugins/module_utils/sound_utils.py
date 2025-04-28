@@ -5,7 +5,6 @@
 # GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """Utility functions for sound playback in Ansible modules."""
-
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
@@ -13,22 +12,106 @@ import os
 import platform
 import subprocess
 import tempfile
+import configparser
+import pathlib
+
+def load_ansible_cfg_settings():
+    """Load sound settings from ansible.cfg file."""
+    sound_settings = {
+        'success_sound': None,
+        'failure_sound': None,
+        'volume': 1.0
+    }
+    
+    # Try to locate ansible.cfg
+    possible_paths = [
+        os.path.join(os.getcwd(), 'ansible.cfg'),
+        os.path.join(os.path.expanduser('~'), '.ansible.cfg'),
+        '/etc/ansible/ansible.cfg'
+    ]
+    
+    for cfg_path in possible_paths:
+        if os.path.exists(cfg_path):
+            try:
+                config = configparser.ConfigParser()
+                config.read(cfg_path)
+                
+                if 'callback_bell' in config:
+                    if 'success_sound' in config['callback_bell']:
+                        path = config['callback_bell']['success_sound']
+                        if os.path.exists(path):
+                            sound_settings['success_sound'] = path
+                    
+                    if 'failure_sound' in config['callback_bell']:
+                        path = config['callback_bell']['failure_sound']
+                        if os.path.exists(path):
+                            sound_settings['failure_sound'] = path
+                    
+                    if 'volume' in config['callback_bell']:
+                        try:
+                            sound_settings['volume'] = float(config['callback_bell']['volume'])
+                        except (ValueError, TypeError):
+                            pass  # Use default if value can't be converted to float
+                
+                break  # Stop after first ansible.cfg found
+            except Exception:
+                pass  # Silently ignore parsing errors
+    
+    return sound_settings
 
 
-def get_default_sound_path():
-    """Return the path to the default sound file."""
+def get_default_sound_path(type='success'):
+    """Return the path to the default sound file.
+    
+    Args:
+        type: Type of sound ('success' or 'failure')
+    """
+    # First check if there's a setting in ansible.cfg
+    cfg_settings = load_ansible_cfg_settings()
+    if type == 'failure' and cfg_settings['failure_sound']:
+        return cfg_settings['failure_sound']
+    elif type == 'success' and cfg_settings['success_sound']:
+        return cfg_settings['success_sound']
+    
+    # Try to find the default sounds in the sample_sound directory
+    # relative to the collection path
+    collection_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+    sample_sound_dir = os.path.join(collection_path, '..', '..', 'sample_sound')
+    
+    if os.path.exists(sample_sound_dir):
+        if type == 'failure':
+            failure_path = os.path.join(sample_sound_dir, 'failure_sound.wav')
+            if os.path.exists(failure_path):
+                return failure_path
+        else:  # success or any other value
+            success_path = os.path.join(sample_sound_dir, 'success_sound.wav')
+            if os.path.exists(success_path):
+                return success_path
+    
+    # Fallback to temp directory
     temp_dir = tempfile.gettempdir()
     return os.path.join(temp_dir, "ansible_bell_default.wav")
 
 
-def create_default_sound():
-    """Create a default beep sound file and return its path."""
+
+def create_default_sound(type='success'):
+    """Create a default beep sound file and return its path.
+    
+    Args:
+        type: Type of sound ('success' or 'failure')
+    """
     try:
         import wave
         import struct
         import math
         
-        sound_path = get_default_sound_path()
+        # First check if we can use an existing default sound
+        sound_path = get_default_sound_path(type)
+        if os.path.exists(sound_path):
+            return sound_path
+            
+        # If not, create a new one
+        sound_path = os.path.join(tempfile.gettempdir(), "ansible_bell_default.wav")
         
         # Create a simple beep sound
         sample_rate = 44100
@@ -80,3 +163,8 @@ def detect_sound_players():
             players.append('powershell')
     
     return players
+
+def get_volume_from_cfg():
+    """Get volume setting from ansible.cfg if available."""
+    cfg_settings = load_ansible_cfg_settings()
+    return cfg_settings['volume']
